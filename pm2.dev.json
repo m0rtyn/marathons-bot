@@ -1,0 +1,23 @@
+{
+  "apps": [
+    {
+      "name": "bot",
+      "script": "dist/index.js",
+      "watch": true,
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "ignore_watch": [
+        ".git*",
+        "*.md",
+        "*.pm2.json",
+        "*.log",
+        "*.txt",
+        "tmp/"
+      ],
+      "watch_options": {
+        "usePolling": true
+      }
+    }
+  ]
+}
