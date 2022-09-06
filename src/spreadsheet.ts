@@ -1,4 +1,5 @@
 import { google } from "googleapis"
+import { JWT } from "googleapis-common"
 import { CREDENTIALS_PATH, SCOPES, SS_ID } from "./constants.js"
 
 const auth = new google.auth.JWT({
@@ -7,7 +8,7 @@ const auth = new google.auth.JWT({
   scopes: SCOPES,
 })
 
-export async function getParticipantNameList(auth) {
+export async function getParticipantNameList(auth: JWT): Promise<string[]> {
   const sheets = google.sheets({ version: 'v4', auth })
 
   try {
@@ -22,12 +23,12 @@ export async function getParticipantNameList(auth) {
   }
 }
 
-export async function checkUser (username)  {
+export async function checkUser (username: string)  {
   const users = await getParticipantNameList(auth)
   return users?.includes(username)
 }
 
-export async function getNextChapter (username) {
+export async function getNextChapter (username: string) {
   const sheets = google.sheets({ version: 'v4', auth })
   const userRowNumber = (await getUserRowIndex(username)) + 1
   const range = `Board!B${userRowNumber}:${userRowNumber}`
@@ -44,10 +45,10 @@ export async function getNextChapter (username) {
   return firstUnreadIndex && firstUnreadIndex !== -1 ? firstUnreadIndex + 1 : 1
 }
 
-export async function getUserRowIndex (username) {
+export async function getUserRowIndex(username: string) {
   const users = await getParticipantNameList(auth)
 
-  const userIndex = users?.indexOf(user => user === username)
+  const userIndex = users.indexOf(username)
   if (!userIndex) {
     return null
   }
@@ -56,7 +57,7 @@ export async function getUserRowIndex (username) {
   return userIndex + 2
 }
 
-export async function setChapterAsRead (username, chapterIndex) {
+export async function setChapterAsRead (username: string, chapterIndex: number) {
   const sheets = google.sheets({ version: 'v4', auth })
   const userRowIndex = (await getUserRowIndex(username)) + 1
   const chapterAlphabetIndex = String.fromCharCode(chapterIndex + 1 + 64)
@@ -80,13 +81,12 @@ export async function setChapterAsRead (username, chapterIndex) {
   }
 }
 
-export async function addParticipantToSheet (username) {
+export async function addParticipantToSheet(username: string) {
   const sheets = google.sheets({ version: 'v4', auth })
-  const userRowNumber = (await getUserRowIndex(auth)) + 1
+  const userRowNumber = (await getUserRowIndex(username)) + 1
   const range = `Board!A${userRowNumber}`
-  // const userCell = { userEnteredValue: username, hyperlink: `https://t.me/${username}` }
 
-  const userRow = [`=hyperlink("https://t.me/${username}"; "@${username}")`]
+  const userRow = [getUserHyperlinkFormulaText(username)]
   // TODO: rework to adding new row
   const requestBody = { values: [userRow] }
 
@@ -102,4 +102,8 @@ export async function addParticipantToSheet (username) {
   } catch (err) {
     console.error(err) 
   }
+}
+
+const getUserHyperlinkFormulaText = (username: string) => {
+  return `=hyperlink("https://t.me/${username}"; "@${username}")`
 }
