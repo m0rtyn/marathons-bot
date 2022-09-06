@@ -6,8 +6,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "pm2 start pm2.dev.json",
-    "dev": "yarn start",
+    "start": "node dist/index.js",
+    "dev": "pm2 start pm2.dev.json",
     "build": "yarn && tsc",
     "prod:start": "pm2 start pm2.prod.json",
     "restart": "pm2 restart bot",
