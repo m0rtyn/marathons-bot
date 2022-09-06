@@ -17,7 +17,7 @@
 
 // function authorize(credentials, callback) {
 //   const {client_secret, client_id, redirect_uris, refresh_token} = credentials.web;
-  
+
 //   const oAuth2Client = new OAuth2(
 //     client_id,
 //     client_secret,
@@ -25,8 +25,8 @@
 //   );
 
 //   oAuth2Client.setCredentials(
-//     { 
-//       refresh_token, 
+//     {
+//       refresh_token,
 //       expiry_date: true
 //     }
 // );
@@ -97,8 +97,6 @@
 //   }
 // }
 
-
-
 // // const command7 = "/help";
 // // const command10 = "/start";
 
@@ -141,7 +139,7 @@
 // // }
 
 // // function getUserRow(userRowIndex) {
-  
+
 // // }
 
 // // function doPost(e) {
@@ -151,7 +149,7 @@
 
 // //     const userRowIndex = findUserRowIndex(userId)
 // //     const userRow = getUserRow(userRowIndex)
-    
+
 // //     sendMessage(id);
 // //   } catch(e) {
 // //     sendMessage(adminId, JSON.stringify(e,null,4));
