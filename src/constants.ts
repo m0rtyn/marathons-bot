@@ -2,6 +2,7 @@ import "dotenv/config.js"
 
 export const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 export const CREDENTIALS_PATH = "./secrets.json"
+export const GOOGLE_CREDENTIALS = process.env.GOOGLE_SECRETS
 
 export const SS_ID = process.env.SS_ID
 export const SS_URL = "https://docs.google.com/spreadsheets/d/" + SS_ID

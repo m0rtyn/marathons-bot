@@ -3,7 +3,6 @@ import { JWT } from "googleapis-common"
 import { CREDENTIALS_PATH, SCOPES, SS_ID } from "./constants.js"
 
 const auth = new google.auth.JWT({
-  // TODO: add reading from secrets
   keyFile: CREDENTIALS_PATH,
   scopes: SCOPES,
 })
