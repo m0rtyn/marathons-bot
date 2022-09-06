@@ -71,7 +71,7 @@ export async function askChapter(ctx: Context) {
 }
 
 export async function setWebhook() {
-  var url = TELEGRAM_URL + "/setWebhook?url=" + WEB_APP_URL
+  const url = TELEGRAM_URL + "/setWebhook?url=" + WEB_APP_URL
   await axios(url)
 }
 
