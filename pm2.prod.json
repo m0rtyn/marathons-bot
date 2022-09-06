@@ -1,11 +1,11 @@
 {
   "apps": [
     {
-        "name": "bot",
-        "script": "dist/index.js",
-        "env": {
-          "NODE_ENV": "production"
-        }
+      "name": "bot",
+      "script": "dist/index.js",
+      "env": {
+        "NODE_ENV": "production"
+      }
     }
   ]
 }
