@@ -1,7 +1,7 @@
 import { Telegraf } from "telegraf"
-import { BOT_TOKEN, WEBHOOK_URL } from "./constants.js"
+import { Answers, BOT_TOKEN, WEBHOOK_URL } from "./constants.js"
 import {
-  askChapter,
+  askNextChapter,
   logUserIn,
   onChapterYes,
   onStart,
@@ -22,13 +22,13 @@ try {
 }
 
 bot.start(onStart)
-// bot.action('chapter_yes', onChapterYes); // TODO: figure out how to use actions
-// bot.action('chapter_no', askChapter);
-bot.hears("Yes", onChapterYes)
-bot.hears("No", askChapter)
-bot.hears("Other", selectOtherChapter)
-bot.hears("Log me in", logUserIn)
-bot.hears("Nevermore", test)
+
+bot.hears(Answers.LOG_ME_IN, logUserIn)
+bot.hears(Answers.NEVERMORE, test)
+
+bot.hears(Answers.YES, onChapterYes)
+bot.hears(Answers.NO, askNextChapter)
+bot.hears(Answers.OTHER, selectOtherChapter)
 
 bot.help((ctx) => ctx.reply("I can't help you"))
 bot.launch()

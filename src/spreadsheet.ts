@@ -1,6 +1,7 @@
 import { google, sheets_v4 } from "googleapis"
 import { JWT } from "googleapis-common"
 import { CREDENTIALS_PATH, SCOPES, SS_ID } from "./constants.js"
+import { getChapterLetter, getUserHyperlinkFormulaText } from "./utils.js"
 
 const auth = new google.auth.JWT({
   keyFile: CREDENTIALS_PATH,
@@ -39,23 +40,23 @@ export async function checkUser(username: string) {
   return users.includes(username)
 }
 
-export async function getNextChapterNumber(username: string): Promise<number | null> {
+export async function getNextChapterNumber(username: string) {
   const sheets = google.sheets({ version: "v4", auth })
-  const userRowNumber = await getUserRowAlpha(username)
-  const range = `Board!B${userRowNumber}:${userRowNumber}`
+  const userRowNumber = await getUserRowNumber(username)
+  const range = `Board!B${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
 
   const values = await getValuesFromSheet(sheets, range) as string[]
   
-  const firstUnreadNumber = values.indexOf("FALSE")
-  if (firstUnreadNumber === -1) return null
+  const firstUnreadIndex = values.indexOf("FALSE")
+  if (firstUnreadIndex === -1) return null
 
-  const chapterNumber = firstUnreadNumber + 2 // +2 because of the 0-based index and header row
+  const chapterNumber = firstUnreadIndex + 1 // +1 because of the 0-based index
   return chapterNumber
 }
 
-export async function getUserRowAlpha(
+export async function getUserRowNumber(
   username: string
-): Promise<number | null> {
+) {
   const users = await getParticipantNameList(auth)
 
   const userIndex = users.indexOf(username)
@@ -65,15 +66,15 @@ export async function getUserRowAlpha(
   return userIndex + 2
 }
 
-export async function setChapterAsRead(username: string, chapterAlpha: number) {
+export async function setChapterAsRead(username: string, chapterNumber: number) {
   const sheets = google.sheets({ version: "v4", auth })
-  const userRowNumber = await getUserRowAlpha(username)
+  const userRowNumber = await getUserRowNumber(username)
 
   if (!userRowNumber) return null
 
-  const chapterAlphabetIndex = String.fromCharCode(chapterAlpha + 64)
+  const chapterAlpha = getChapterLetter(chapterNumber)
 
-  const range = `Board!${chapterAlphabetIndex}${userRowNumber}`
+  const range = `Board!${chapterAlpha}${userRowNumber}`
   const requestBody = { values: [[true]] }
 
   try {
@@ -116,6 +117,3 @@ export async function addParticipantToSheet(username: string) {
   }
 }
 
-const getUserHyperlinkFormulaText = (username: string) => {
-  return `=hyperlink("https://t.me/${username}"; "${username}")`
-}
