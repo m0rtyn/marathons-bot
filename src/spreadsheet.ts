@@ -36,21 +36,20 @@ export async function getParticipantNameList(
 
 export async function checkUser(username: string) {
   const users = await getParticipantNameList(auth)
-  const userHandle = `@${username}`
-  return users.includes(userHandle)
+  return users.includes(username)
 }
 
-export async function getNextChapterNumber(username: string): Promise<any> {
+export async function getNextChapterNumber(username: string): Promise<number | null> {
   const sheets = google.sheets({ version: "v4", auth })
   const userRowNumber = await getUserRowAlpha(username)
   const range = `Board!B${userRowNumber}:${userRowNumber}`
 
   const values = await getValuesFromSheet(sheets, range) as string[]
+  
   const firstUnreadNumber = values.indexOf("FALSE")
-  console.log("🚀 ~ values", values, range)
   if (firstUnreadNumber === -1) return null
 
-  const chapterNumber = firstUnreadNumber + 1 // +1 because of the 0-based index
+  const chapterNumber = firstUnreadNumber + 2 // +2 because of the 0-based index and header row
   return chapterNumber
 }
 
@@ -58,9 +57,8 @@ export async function getUserRowAlpha(
   username: string
 ): Promise<number | null> {
   const users = await getParticipantNameList(auth)
-  const userHandle = `@${username}`
 
-  const userIndex = users.indexOf(userHandle)
+  const userIndex = users.indexOf(username)
   if (userIndex === -1) return null
 
   // +2 because of header and 0-based index
@@ -71,7 +69,7 @@ export async function setChapterAsRead(username: string, chapterAlpha: number) {
   const sheets = google.sheets({ version: "v4", auth })
   const userRowNumber = await getUserRowAlpha(username)
 
-  if (userRowNumber === -1) return null
+  if (!userRowNumber) return null
 
   const chapterAlphabetIndex = String.fromCharCode(chapterAlpha + 64)
 
@@ -119,5 +117,5 @@ export async function addParticipantToSheet(username: string) {
 }
 
 const getUserHyperlinkFormulaText = (username: string) => {
-  return `=hyperlink("https://t.me/${username}"; "@${username}")`
+  return `=hyperlink("https://t.me/${username}"; "${username}")`
 }
