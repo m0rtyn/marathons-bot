@@ -1,6 +1,6 @@
 import { Context, Markup } from "telegraf"
 import axios from "axios"
-import { Answers, SS_URL, TELEGRAM_URL, WEB_APP_URL } from "./constants.js"
+import { Answers, SS_URL, TELEGRAM_BOT_URL, WEB_APP_URL } from "./constants.js"
 import {
   addParticipantToSheet,
   checkUser,
@@ -17,7 +17,6 @@ export async function onStart(ctx: Context) {
 
     askChapter(ctx)
   } else {
-    // TODO:  add reply with a keyboard
     ctx.reply(
       "Would you like to join a marathon? (WIP)",
       Markup.keyboard([
@@ -71,7 +70,7 @@ export async function askChapter(ctx: Context) {
 }
 
 export async function setWebhook() {
-  const url = TELEGRAM_URL + "/setWebhook?url=" + WEB_APP_URL
+  const url = TELEGRAM_BOT_URL + "/setWebhook?url=" + WEB_APP_URL
   await axios(url)
 }
 

@@ -10,12 +10,17 @@ import {
 } from "./bot.js"
 
 const bot = new Telegraf(BOT_TOKEN)
-bot.use(Telegraf.log())
 
-bot.telegram.setWebhook(WEBHOOK_URL)
+try {
+  bot.use(Telegraf.log())
+  bot.telegram.setWebhook(WEBHOOK_URL)
+} catch (error) {
+  console.log(error)
+  bot.stop()
+}
+
 
 bot.start(onStart)
-
 // bot.action('chapter_yes', onChapterYes); // TODO: figure out how to use actions
 // bot.action('chapter_no', askChapter);
 bot.hears("Yes", onChapterYes)
@@ -26,5 +31,6 @@ bot.hears("Nevermore", test)
 
 bot.help((ctx) => ctx.reply("I can't help you"))
 bot.launch()
+
 process.once("SIGINT", () => bot.stop())
 process.once("SIGTERM", () => bot.stop())
