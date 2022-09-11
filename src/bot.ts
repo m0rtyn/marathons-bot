@@ -16,11 +16,11 @@ export async function onStart(ctx: Context) {
   const isLoggedIn = await checkUser(username)
 
   if (isLoggedIn) {
-    ctx.reply("You are logged in")
+    await ctx.reply("You are logged in")
 
-    askChapter(ctx)
+    return await askChapter(ctx)
   } else {
-    ctx.reply(
+    return await ctx.reply(
       "Would you like to join a marathon? (WIP)",
       Markup.keyboard([
         Markup.button.text(Answers.LOG_ME_IN),
@@ -39,12 +39,14 @@ export async function logUserIn(ctx: Context) {
   const isLoggedIn = await checkUser(username)
 
   if (isLoggedIn) {
-    ctx.reply("You are already logged in")
+    return await ctx.reply("You are already logged in")
   } else {
     await addParticipantToSheet(username)
-    ctx.reply(
+    await ctx.reply(
       `Now, you are logged in the marathon. \nYou can check it at ${SS_URL}`
     )
+
+    return await askChapter(ctx)
   }
 }
 
@@ -53,16 +55,16 @@ export async function onChapterYes(ctx: Context) {
 
   if (!username) throw new Error("Username is not defined")
 
-  const nextChapterAlpha = await getNextChapterNumber(username)
+  const nextChapterNumber = await getNextChapterNumber(username)
+  console.log("🚀 ~ onChapterYes ~ nextChapterAlpha", nextChapterNumber)
 
-  if (nextChapterAlpha) {
-    await setChapterAsRead(username, nextChapterAlpha)
-    ctx.reply("Ok, next chapter")
-    askChapter(ctx)
-  } else {
-    ctx.reply("You have finished the marathon!")
-    return
+  if (!nextChapterNumber) {
+    return await ctx.reply("You have finished the marathon!")
   }
+  
+  await setChapterAsRead(username, nextChapterNumber)
+  await ctx.reply("Ok, next chapter")
+  return await askChapter(ctx)
 }
 
 export async function askChapter(ctx: Context) {
@@ -72,21 +74,20 @@ export async function askChapter(ctx: Context) {
   const nextChapter = await getNextChapterNumber(username)
 
   if (!nextChapter) {
-    ctx.reply(`There are no any chapters left.
+    return await ctx.reply(`There are no any chapters left.
     You can check it at ${SS_URL}
     debug: ${nextChapter}`)
-  } else {
-    const buttons = [
-      Markup.button.text(Answers.YES),
-      Markup.button.text(Answers.NO),
-      Markup.button.text(Answers.OTHER),
-    ]
-
-    ctx.reply(
-      `Do you read chapter ${nextChapter}?`,
-      Markup.keyboard(buttons).oneTime().resize()
-    )
   }
+  const buttons = [
+    Markup.button.text(Answers.YES),
+    Markup.button.text(Answers.NO),
+    Markup.button.text(Answers.OTHER),
+  ]
+
+  return await ctx.reply(
+    `Do you read chapter ${nextChapter}?`,
+    Markup.keyboard(buttons).oneTime().resize()
+  )
 }
 
 export async function setWebhook() {
