@@ -9,16 +9,17 @@ import {
   test,
 } from "./bot.js"
 
+if (!BOT_TOKEN || !WEBHOOK_URL) throw new Error("No token or webhook url")
+
 const bot = new Telegraf(BOT_TOKEN)
 
 try {
-  bot.use(Telegraf.log())
+  // bot.use(Telegraf.log())
   bot.telegram.setWebhook(WEBHOOK_URL)
 } catch (error) {
-  console.log(error)
+  console.error(error)
   bot.stop()
 }
-
 
 bot.start(onStart)
 // bot.action('chapter_yes', onChapterYes); // TODO: figure out how to use actions

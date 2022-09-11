@@ -4,12 +4,15 @@ import { Answers, SS_URL, TELEGRAM_BOT_URL, WEB_APP_URL } from "./constants.js"
 import {
   addParticipantToSheet,
   checkUser,
-  getNextChapter,
+  getNextChapterNumber,
   setChapterAsRead,
 } from "./spreadsheet.js"
 
 export async function onStart(ctx: Context) {
-  const username = ctx.message.from.username
+  const username = ctx.message?.from.username
+
+  if (!username) throw new Error("No username found")
+
   const isLoggedIn = await checkUser(username)
 
   if (isLoggedIn) {
@@ -30,7 +33,9 @@ export async function onStart(ctx: Context) {
 }
 
 export async function logUserIn(ctx: Context) {
-  const username = ctx.message.from.username
+  const username = ctx.message?.from.username
+  if (!username) throw new Error("No username found")
+
   const isLoggedIn = await checkUser(username)
 
   if (isLoggedIn) {
@@ -44,29 +49,44 @@ export async function logUserIn(ctx: Context) {
 }
 
 export async function onChapterYes(ctx: Context) {
-  console.log("onChapterYes")
-  const username = ctx.from.username
-  const nextChapter = await getNextChapter(username)
+  const username = ctx.from?.username
 
-  await setChapterAsRead(username, nextChapter)
-  ctx.reply("Ok, next chapter")
-  askChapter(ctx)
+  if (!username) throw new Error("Username is not defined")
+
+  const nextChapterAlpha = await getNextChapterNumber(username)
+
+  if (nextChapterAlpha) {
+    await setChapterAsRead(username, nextChapterAlpha)
+    ctx.reply("Ok, next chapter")
+    askChapter(ctx)
+  } else {
+    ctx.reply("You have finished the marathon!")
+    return
+  }
 }
 
 export async function askChapter(ctx: Context) {
-  const username = ctx.message.from.username
-  const nextChapter = await getNextChapter(username)
+  const username = ctx.message?.from.username
+  if (!username) throw new Error("No username found")
 
-  ctx.reply(
-    `Do you read chapter ${nextChapter}?`,
-    Markup.keyboard([
+  const nextChapter = await getNextChapterNumber(username)
+
+  if (!nextChapter) {
+    ctx.reply(`There are no any chapters left.
+    You can check it at ${SS_URL}
+    debug: ${nextChapter}`)
+  } else {
+    const buttons = [
       Markup.button.text(Answers.YES),
       Markup.button.text(Answers.NO),
       Markup.button.text(Answers.OTHER),
-    ])
-      .oneTime()
-      .resize()
-  )
+    ]
+
+    ctx.reply(
+      `Do you read chapter ${nextChapter}?`,
+      Markup.keyboard(buttons).oneTime().resize()
+    )
+  }
 }
 
 export async function setWebhook() {
@@ -76,10 +96,10 @@ export async function setWebhook() {
 
 export async function test(ctx: Context) {
   // console.log(ctx.message)
-  console.log("🚀 ~ test ~ TEST")
+  console.log("🚀 ~ test ~ TEST", ctx)
   // ctx.callbackQuery.data = 'chapter_yes'
 }
 
 export async function selectOtherChapter(ctx: Context) {
-  console.log("selectOtherChapter WIP")
+  console.log("selectOtherChapter WIP", ctx)
 }

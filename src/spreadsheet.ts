@@ -1,4 +1,4 @@
-import { google } from "googleapis"
+import { google, sheets_v4 } from "googleapis"
 import { JWT } from "googleapis-common"
 import { CREDENTIALS_PATH, SCOPES, SS_ID } from "./constants.js"
 
@@ -7,71 +7,76 @@ const auth = new google.auth.JWT({
   scopes: SCOPES,
 })
 
-export async function getParticipantNameList(auth: JWT): Promise<string[]> {
-  const sheets = google.sheets({ version: "v4", auth })
-
+export const getValuesFromSheet = async (
+  sheets: sheets_v4.Sheets,
+  range: string
+) => {
   try {
     return sheets.spreadsheets.values
       .get({
         spreadsheetId: SS_ID,
-        range: "Board!A2:A",
+        range,
       })
       .then((res) => {
-        return res?.data?.values?.flat()
+        return res.data.values?.flat() || []
       })
   } catch (err) {
     console.error(err)
+    throw new Error("The API returned an error: " + err)
   }
+}
+
+export async function getParticipantNameList(
+  auth: JWT
+): Promise<string[] | never> {
+  const sheets = google.sheets({ version: "v4", auth })
+
+  return getValuesFromSheet(sheets, "Board!A2:A")
 }
 
 export async function checkUser(username: string) {
   const users = await getParticipantNameList(auth)
-  return users?.includes(username)
+  const userHandle = `@${username}`
+  return users.includes(userHandle)
 }
 
-export async function getNextChapter(username: string) {
+export async function getNextChapterNumber(username: string): Promise<any> {
   const sheets = google.sheets({ version: "v4", auth })
-  const userRowNumber = (await getUserRowIndex(username)) + 1
+  const userRowNumber = await getUserRowAlpha(username)
   const range = `Board!B${userRowNumber}:${userRowNumber}`
 
-  const values = await sheets.spreadsheets.values
-    .get({
-      spreadsheetId: SS_ID,
-      range,
-    })
-    .then((res) => {
-      return res?.data?.values?.flat()
-    })
+  const values = await getValuesFromSheet(sheets, range) as string[]
+  const firstUnreadNumber = values.indexOf("FALSE")
+  console.log("🚀 ~ values", values, range)
+  if (firstUnreadNumber === -1) return null
 
-  const firstUnreadIndex = values?.indexOf("FALSE")
-  console.log(
-    "🚀 ~ getNextChapter ~ firstUnreadIndex",
-    values,
-    firstUnreadIndex
-  )
-  return firstUnreadIndex && firstUnreadIndex !== -1 ? firstUnreadIndex + 1 : 1
+  const chapterNumber = firstUnreadNumber + 1 // +1 because of the 0-based index
+  return chapterNumber
 }
 
-export async function getUserRowIndex(username: string) {
+export async function getUserRowAlpha(
+  username: string
+): Promise<number | null> {
   const users = await getParticipantNameList(auth)
+  const userHandle = `@${username}`
 
-  const userIndex = users.indexOf(username)
-  if (!userIndex) {
-    return null
-  }
+  const userIndex = users.indexOf(userHandle)
+  if (userIndex === -1) return null
 
   // +2 because of header and 0-based index
   return userIndex + 2
 }
 
-export async function setChapterAsRead(username: string, chapterIndex: number) {
+export async function setChapterAsRead(username: string, chapterAlpha: number) {
   const sheets = google.sheets({ version: "v4", auth })
-  const userRowIndex = (await getUserRowIndex(username)) + 1
-  const chapterAlphabetIndex = String.fromCharCode(chapterIndex + 1 + 64)
+  const userRowNumber = await getUserRowAlpha(username)
 
-  const range = `Board!${chapterAlphabetIndex}${userRowIndex}:AO${userRowIndex}`
+  if (userRowNumber === -1) return null
+
+  const chapterAlphabetIndex = String.fromCharCode(chapterAlpha + 64)
+
+  const range = `Board!${chapterAlphabetIndex}${userRowNumber}`
   const requestBody = { values: [[true]] }
-  // console.log("🚀 ~ setChapterAsRead ~ range", range)
 
   try {
     const response = await sheets.spreadsheets.values.update({
@@ -80,18 +85,19 @@ export async function setChapterAsRead(username: string, chapterIndex: number) {
       valueInputOption: "USER_ENTERED",
       range,
     })
-    // console.log("🚀 ~ setChapterAsRead ~ response", response)
 
     return response
   } catch (err) {
     console.error(err)
+    throw new Error("The API returned an error: " + err)
   }
 }
 
 export async function addParticipantToSheet(username: string) {
   const sheets = google.sheets({ version: "v4", auth })
-  const userRowNumber = (await getUserRowIndex(username)) + 1
-  const range = `Board!A${userRowNumber}`
+
+  const newRowNumber = await getParticipantNameList(auth).then((users) => users.length + 1) // +1 because of header
+  const range = `Board!A${newRowNumber}`
 
   const userRow = [getUserHyperlinkFormulaText(username)]
   // TODO: rework to adding new row
@@ -108,6 +114,7 @@ export async function addParticipantToSheet(username: string) {
     return response
   } catch (err) {
     console.error(err)
+    throw new Error("The API returned an error: " + err)
   }
 }
 
