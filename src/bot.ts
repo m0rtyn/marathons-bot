@@ -53,7 +53,7 @@ export async function onChapterYes(ctx: Context) {
   const nextChapterNumber = await getNextChapterNumber(username)
 
   if (!nextChapterNumber) {
-    return await ctx.reply("You have finished the marathon!")
+    return await finishMarathon(ctx)
   }
 
   await setChapterAsRead(username, nextChapterNumber)
@@ -71,6 +71,10 @@ export async function askNextChapter(ctx: Context) {
   }
 
   const chapterLetter = getChapterLetter(nextChapterNumber)
+  if (chapterLetter === null) {
+    return await finishMarathon(ctx)
+  }
+
   const replyText = `Do you read chapter ${nextChapterNumber} (column: ${chapterLetter.toUpperCase()})?`
   const buttons = [
     Markup.button.text(Answers.YES),
@@ -84,6 +88,10 @@ export async function askNextChapter(ctx: Context) {
 export async function setWebhook() {
   const url = TELEGRAM_BOT_URL + "/setWebhook?url=" + WEB_APP_URL
   await axios(url)
+}
+
+export async function finishMarathon(ctx: Context) {
+  return ctx.reply("You have finished the marathon!")
 }
 
 export async function test(ctx: Context) {
