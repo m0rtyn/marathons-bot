@@ -21,6 +21,10 @@ try {
   bot.stop()
 }
 
+bot.catch((err, ctx) => {
+  console.log(`Ooops, encountered an error for ${ctx.updateType}`, err)
+})
+
 bot.start(onStart)
 
 bot.hears(Answers.LOG_ME_IN, logUserIn)
