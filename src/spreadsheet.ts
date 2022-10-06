@@ -1,6 +1,6 @@
 import { google, sheets_v4 } from "googleapis"
 import { JWT } from "googleapis-common"
-import { CREDENTIALS_PATH, SCOPES, SS_ID } from "./constants.js"
+import { CONTENTS_ADDRESS, CREDENTIALS_PATH, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID } from "./constants.js"
 import { getChapterLetter, getUserHyperlinkFormulaText } from "./utils.js"
 
 const auth = new google.auth.JWT({
@@ -34,7 +34,7 @@ export async function getParticipantNameList(
 ): Promise<string[] | never> {
   const sheets = google.sheets({ version: "v4", auth })
 
-  return (await getValuesFromSheet(sheets, "Board!A2:A")).flat()
+  return (await getValuesFromSheet(sheets, MEMBER_NAMES_ADDRESS)).flat()
 }
 
 export async function checkUser(username: string) {
@@ -45,7 +45,7 @@ export async function checkUser(username: string) {
 export async function getNextChapterNumber(username: string) {
   const sheets = google.sheets({ version: "v4", auth })
   const userRowNumber = await getUserRowNumber(username)
-  const range = `Board!B${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
+  const range = `${SHEETS.MEMBERS}!B${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
 
   const values = (await (
     await getValuesFromSheet(sheets, range)
@@ -65,11 +65,11 @@ export async function getNextChapterName(
 
   const [chapterPages, chapterNames] = await getValuesFromSheet(
     sheets,
-    `Contents!A1:B45`, // TODO: extract to constants
+    CONTENTS_ADDRESS,
     "COLUMNS"
   )
 
-  const chapterRowIndex = chapterPages.indexOf(`${chapterPage}`)
+  const chapterRowIndex = chapterPages.indexOf(chapterPage.toString())
   const chapterName = chapterNames[chapterRowIndex]
 
   return chapterName
@@ -96,7 +96,7 @@ export async function setChapterAsRead(
 
   const chapterAlpha = getChapterLetter(chapterNumber)
 
-  const range = `Board!${chapterAlpha}${userRowNumber}`
+  const range = `${SHEETS.MEMBERS}!${chapterAlpha}${userRowNumber}`
   const requestBody = { values: [[true]] }
 
   try {
@@ -120,7 +120,7 @@ export async function addParticipantToSheet(username: string) {
   const newRowNumber = await getParticipantNameList(auth).then(
     (users) => users.length + 1
   ) // +1 because of header
-  const range = `Board!A${newRowNumber}`
+  const range = `${SHEETS.MEMBERS}!A${newRowNumber}`
 
   const userRow = [getUserHyperlinkFormulaText(username)]
   // TODO: rework to adding new row
@@ -144,7 +144,7 @@ export async function addParticipantToSheet(username: string) {
 export async function getChapterPage(chapterNumber: number) {
   const sheets = google.sheets({ version: "v4", auth })
   const chapterColumnLetter = getChapterLetter(chapterNumber)
-  const chapterPageAddress = `Board!${chapterColumnLetter}1:${chapterColumnLetter}1`
+  const chapterPageAddress = `${SHEETS.MEMBERS}!${chapterColumnLetter}1:${chapterColumnLetter}1`
 
   const chapterPage = (await getValuesFromSheet(sheets, chapterPageAddress)).flat()[0]
 

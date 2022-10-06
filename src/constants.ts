@@ -5,7 +5,7 @@ export const CREDENTIALS_PATH = "./secrets.json"
 export const SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 export const SS_ID = process.env.SS_ID
-export const SS_URL = "https://docs.google.com/spreadsheets/d/" + SS_ID
+const SS_URL = "https://docs.google.com/spreadsheets/d/" + SS_ID
 export const ADMIN_ID = "m0rtyn"
 export const HELP_TEXT =
   "Hello user! This marathon allows you to track your progress in Martyn's marathons. Please send commands (starting with '/') to navigate the bot. Always wait for a response of the bot before entering another text. Enjoy easy transfer!"
@@ -27,3 +27,18 @@ export enum Answers {
   LOG_ME_IN = "Log me in",
   NEVERMORE = "Nevermore",
 }
+
+export const MESSAGES = {
+  LOGGED_IN_MESSAGE: `Now, you are logged in the marathon. \nYou can check it at ${SS_URL}`,
+  NO_CHAPTER_FOUND: `There are no any chapters left. \nYou can check it at ${SS_URL}`,
+  CHAPTER_QUESTION: "Did you read chapter", // Full: Did you read chapter 3 (page: 5)?
+}
+
+export enum SHEETS {
+  MEMBERS = "Board",
+  CONTENTS = "Contents",
+  TEAMS = "Leaderboard",
+}
+
+export const CONTENTS_ADDRESS =  `${SHEETS.CONTENTS}!A1:B45`
+export const MEMBER_NAMES_ADDRESS = `${SHEETS.MEMBERS}!A2:A`

@@ -1,6 +1,6 @@
 import { Context, Markup } from "telegraf"
 import axios from "axios"
-import { Answers, SS_URL, TELEGRAM_BOT_URL, WEB_APP_URL } from "./constants.js"
+import { Answers, MESSAGES, TELEGRAM_BOT_URL, WEB_APP_URL } from "./constants.js"
 import {
   addParticipantToSheet,
   checkUser,
@@ -40,7 +40,7 @@ export async function logUserIn(ctx: Context) {
 
   await addParticipantToSheet(username)
   await ctx.reply(
-    `Now, you are logged in the marathon. \nYou can check it at ${SS_URL}`
+    MESSAGES.LOGGED_IN_MESSAGE,
   )
 
   return await askNextChapter(ctx)
@@ -71,13 +71,13 @@ export async function askNextChapter(ctx: Context) {
     return await finishMarathon(ctx)
   }
   if (!nextChapterNumber) {
-    throw new Error(`There are no any chapters left. \nYou can check it at ${SS_URL} \nDebug: ${nextChapterNumber}`)
+    throw new Error(MESSAGES.NO_CHAPTER_FOUND)
   }
   
   const nextChapterPage =  await getChapterPage(nextChapterNumber)
   const nextChapterName = await getChapterName(nextChapterPage)
 
-  const replyText = `Did you read chapter ${nextChapterName} (page: ${nextChapterPage})?`
+  const replyText = `${MESSAGES.CHAPTER_QUESTION} «${nextChapterName}» (page: ${nextChapterPage})?`
   const buttons = [
     Markup.button.text(Answers.YES),
     Markup.button.text(Answers.NO),
