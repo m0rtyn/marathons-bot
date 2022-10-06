@@ -8,11 +8,11 @@
   "scripts": {
     "start": "NODE_ENV=development node dist/index.js",
     "build": "yarn && tsc",
-    "dev": "pm2 start pm2.dev.json",
+    "dev": "pm2 start pm2.dev.json && yarn logs",
     "prod:start": "pm2-runtime start pm2.prod.json",
     "restart": "pm2-runtime restart bot",
-    "stop": "pm2 kill",
-    "logs": "pm2 logs",
+    "kill": "pm2 kill",
+    "logs": "pm2 logs --lines=100",
     "test": "jest --config jest.config.js"
   },
   "dependencies": {

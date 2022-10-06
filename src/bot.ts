@@ -4,10 +4,11 @@ import { Answers, SS_URL, TELEGRAM_BOT_URL, WEB_APP_URL } from "./constants.js"
 import {
   addParticipantToSheet,
   checkUser,
+  getChapterPage,
+  getNextChapterName as getChapterName,
   getNextChapterNumber,
   setChapterAsRead,
 } from "./spreadsheet.js"
-import { getChapterLetter } from "./utils.js"
 
 export async function onStart(ctx: Context) {
   const username = ctx.message?.from.username
@@ -66,16 +67,17 @@ export async function askNextChapter(ctx: Context) {
   if (!username) throw new Error("No username found")
 
   const nextChapterNumber = await getNextChapterNumber(username)
+  if (nextChapterNumber === null) {
+    return await finishMarathon(ctx)
+  }
   if (!nextChapterNumber) {
     throw new Error(`There are no any chapters left. \nYou can check it at ${SS_URL} \nDebug: ${nextChapterNumber}`)
   }
+  
+  const nextChapterPage =  await getChapterPage(nextChapterNumber)
+  const nextChapterName = await getChapterName(nextChapterPage)
 
-  const chapterLetter = getChapterLetter(nextChapterNumber)
-  if (chapterLetter === null) {
-    return await finishMarathon(ctx)
-  }
-
-  const replyText = `Do you read chapter ${nextChapterNumber} (column: ${chapterLetter.toUpperCase()})?`
+  const replyText = `Did you read chapter ${nextChapterName} (page: ${nextChapterPage})?`
   const buttons = [
     Markup.button.text(Answers.YES),
     Markup.button.text(Answers.NO),
