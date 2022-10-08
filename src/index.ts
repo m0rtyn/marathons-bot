@@ -1,5 +1,5 @@
 import { Telegraf } from "telegraf"
-import { Answers, BOT_TOKEN, WEBHOOK_URL } from "./constants.js"
+import { Answers, BOT_TOKEN, MESSAGES, WEBHOOK_URL } from "./constants.js"
 import {
   askNextChapter,
   logUserIn,
@@ -34,7 +34,7 @@ bot.hears(Answers.YES, onChapterYes)
 bot.hears(Answers.NO, askNextChapter)
 bot.hears(Answers.OTHER, selectOtherChapter)
 
-bot.help((ctx) => ctx.reply("I can't help you"))
+bot.help((ctx) => ctx.reply(MESSAGES.HELP))
 bot.launch()
 
 process.once("SIGINT", () => bot.stop())

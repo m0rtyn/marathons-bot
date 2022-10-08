@@ -29,9 +29,14 @@ export enum Answers {
 }
 
 export const MESSAGES = {
+  JOIN_MARATHON: "Would you like to join a marathon?",
   LOGGED_IN_MESSAGE: `Now, you are logged in the marathon. \nYou can check it at ${SS_URL}`,
-  NO_CHAPTER_FOUND: `There are no any chapters left. \nYou can check it at ${SS_URL}`,
+  NEXT_CHAPTER: "Ok, next chapter",
   CHAPTER_QUESTION: "Did you read chapter", // Full: Did you read chapter 3 (page: 5)?
+  NO_CHAPTER_FOUND: `There are no any chapters left. \nYou can check it at ${SS_URL}`,
+  MARATHON_FINISHED: "You have finished the marathon!",
+  SELECT_OTHER_CHAPTER: "Selecting other chapters yet in progress. So, I ask you again.",
+  HELP: "Calm down. You can ask @m0rtyn about problems with me.",
 }
 
 export enum SHEETS {

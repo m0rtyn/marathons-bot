@@ -29,7 +29,7 @@ async function loggingInUser(ctx: Context) {
     Markup.button.text(Answers.NEVERMORE),
   ]
   return await ctx.reply(
-    "Would you like to join a marathon?",
+    MESSAGES.JOIN_MARATHON,
     Markup.keyboard(buttons).oneTime().resize()
   )
 }
@@ -58,7 +58,7 @@ export async function onChapterYes(ctx: Context) {
   }
 
   await setChapterAsRead(username, nextChapterNumber)
-  await ctx.reply("Ok, next chapter")
+  await ctx.reply(MESSAGES.NEXT_CHAPTER)
   return await askNextChapter(ctx)
 }
 
@@ -93,7 +93,7 @@ export async function setWebhook() {
 }
 
 export async function finishMarathon(ctx: Context) {
-  return ctx.reply("You have finished the marathon!")
+  return ctx.reply(MESSAGES.MARATHON_FINISHED)
 }
 
 export async function test(ctx: Context) {
@@ -103,6 +103,6 @@ export async function test(ctx: Context) {
 }
 
 export async function selectOtherChapter(ctx: Context) {
-  await ctx.reply("Selecting other chapters yet in progress. So, I ask you again.")
+  await ctx.reply(MESSAGES.SELECT_OTHER_CHAPTER)
   return await askNextChapter(ctx)
 }
