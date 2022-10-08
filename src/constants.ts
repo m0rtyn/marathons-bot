@@ -36,7 +36,7 @@ export const MESSAGES = {
   NO_CHAPTER_FOUND: `There are no any chapters left. \nYou can check it at ${SS_URL}`,
   MARATHON_FINISHED: "You have finished the marathon!",
   SELECT_OTHER_CHAPTER: "Selecting other chapters yet in progress. So, I ask you again.",
-  HELP: "Calm down. You can ask @m0rtyn about problems with me.",
+  HELP: "Chill, you can ask @m0rtyn about problems with me.",
   UNKNOWN_TEXT: "Sorry, I don't understand you. Try to use answer buttons instead of typing text. Also you can ask @m0rtyn for help about me.",
 }
 
