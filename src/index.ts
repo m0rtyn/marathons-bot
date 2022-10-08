@@ -26,6 +26,7 @@ bot.catch((err, ctx) => {
 })
 
 bot.start(onStart)
+bot.help((ctx) => ctx.reply(MESSAGES.HELP))
 
 bot.hears(Answers.LOG_ME_IN, logUserIn)
 bot.hears(Answers.NEVERMORE, test)
@@ -33,9 +34,9 @@ bot.hears(Answers.NEVERMORE, test)
 bot.hears(Answers.YES, onChapterYes)
 bot.hears(Answers.NO, askNextChapter)
 bot.hears(Answers.OTHER, selectOtherChapter)
+
 bot.hears(/.*/, (ctx) => ctx.reply(MESSAGES.UNKNOWN_TEXT))
 
-bot.help((ctx) => ctx.reply(MESSAGES.HELP))
 bot.launch()
 
 process.once("SIGINT", () => bot.stop())
