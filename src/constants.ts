@@ -37,7 +37,7 @@ export const MESSAGES = {
   MARATHON_FINISHED: "You have finished the marathon!",
   SELECT_OTHER_CHAPTER: "Selecting other chapters yet in progress. So, I ask you again.",
   HELP: "Calm down. You can ask @m0rtyn about problems with me.",
-  UNKNOWN_TEXT: "Sorry, I don't understand you. Try to use answer buttons instead of typing text.",
+  UNKNOWN_TEXT: "Sorry, I don't understand you. Try to use answer buttons instead of typing text. Also you can ask @m0rtyn for help about me.",
 }
 
 export enum SHEETS {
