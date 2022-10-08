@@ -33,6 +33,7 @@ bot.hears(Answers.NEVERMORE, test)
 bot.hears(Answers.YES, onChapterYes)
 bot.hears(Answers.NO, askNextChapter)
 bot.hears(Answers.OTHER, selectOtherChapter)
+bot.hears(/.*/, (ctx) => ctx.reply(MESSAGES.UNKNOWN_TEXT))
 
 bot.help((ctx) => ctx.reply(MESSAGES.HELP))
 bot.launch()
