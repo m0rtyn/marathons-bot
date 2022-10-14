@@ -81,8 +81,8 @@ export async function getUserRowNumber(username: string) {
   const userIndex = users.indexOf(username)
   if (userIndex === -1) return null
 
-  // +2 because of header and 0-based index
-  return userIndex + 2
+  // +2 because of 0-based index
+  return userIndex + 1
 }
 
 export async function setChapterAsRead(
