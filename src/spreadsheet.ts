@@ -1,6 +1,6 @@
 import { google, sheets_v4 } from "googleapis"
 import { JWT } from "googleapis-common"
-import { CONTENTS_ADDRESS, CREDENTIALS_PATH, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID } from "./constants.js"
+import { CHAPTERS_PAGES_ROW, CONTENTS_ADDRESS, CREDENTIALS_PATH, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID } from "./constants.js"
 import { getChapterLetter, getUserHyperlinkFormulaText } from "./utils.js"
 
 const auth = new google.auth.JWT({
@@ -144,9 +144,11 @@ export async function addParticipantToSheet(username: string) {
 export async function getChapterPage(chapterNumber: number) {
   const sheets = google.sheets({ version: "v4", auth })
   const chapterColumnLetter = getChapterLetter(chapterNumber)
-  const chapterPageAddress = `${SHEETS.MEMBERS}!${chapterColumnLetter}1:${chapterColumnLetter}1`
+  const chapterPageAddress = `${SHEETS.MEMBERS}!${chapterColumnLetter}${CHAPTERS_PAGES_ROW}:${chapterColumnLetter}${CHAPTERS_PAGES_ROW}`
 
   const chapterPage = (await getValuesFromSheet(sheets, chapterPageAddress)).flat()[0]
+
+  if (!chapterPage) throw new Error("Chapter page not found")
 
   return Number(chapterPage)
 }

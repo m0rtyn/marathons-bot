@@ -46,7 +46,7 @@ export async function logUserIn(ctx: Context) {
   return await askNextChapter(ctx)
 }
 
-export async function onChapterYes(ctx: Context) {
+export async function onChapterRead(ctx: Context) {
   const username = ctx.from?.username
 
   if (!username) throw new Error("Username is not defined")
@@ -67,12 +67,9 @@ export async function askNextChapter(ctx: Context) {
   if (!username) throw new Error("No username found")
 
   const nextChapterNumber = await getNextChapterNumber(username)
-  if (nextChapterNumber === null) {
-    return await finishMarathon(ctx)
-  }
-  if (!nextChapterNumber) {
-    throw new Error(MESSAGES.NO_CHAPTER_FOUND)
-  }
+  if (nextChapterNumber === null) return await finishMarathon(ctx)
+
+  if (!nextChapterNumber) throw new Error(MESSAGES.NO_CHAPTER_FOUND)
   
   const nextChapterPage =  await getChapterPage(nextChapterNumber)
   const nextChapterName = await getChapterName(nextChapterPage)

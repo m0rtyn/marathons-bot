@@ -38,6 +38,7 @@ export const MESSAGES = {
   SELECT_OTHER_CHAPTER: "Selecting other chapters yet in progress. So, I ask you again.",
   HELP: "Chill, you can ask @m0rtyn about problems with me.",
   UNKNOWN_TEXT: "Sorry, I don't understand you. Try to use answer buttons instead of typing text. Also you can ask @m0rtyn for help about me.",
+  ERROR: "Sorry, something went wrong. Try again later or ask @m0rtyn for help.",
 }
 
 export enum SHEETS {
@@ -49,4 +50,5 @@ export enum SHEETS {
 export const CONTENTS_ADDRESS =  `${SHEETS.CONTENTS}!A1:B45`
 export const CHALLENGES_ADDRESS = `${SHEETS.CONTENTS}!C1:C45`
 export const MEMBERS_NAMES_COLUMN = "B"
+export const CHAPTERS_PAGES_ROW = "2"
 export const MEMBER_NAMES_ADDRESS = `${SHEETS.MEMBERS}!${MEMBERS_NAMES_COLUMN}4:${MEMBERS_NAMES_COLUMN}`
