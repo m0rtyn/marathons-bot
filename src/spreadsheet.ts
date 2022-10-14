@@ -1,6 +1,6 @@
 import { google, sheets_v4 } from "googleapis"
 import { JWT } from "googleapis-common"
-import { CONTENTS_ADDRESS, CREDENTIALS_PATH, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID } from "./constants.js"
+import { CONTENTS_ADDRESS, CREDENTIALS_PATH, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID } from "./constants.js"
 import { getChapterLetter, getUserHyperlinkFormulaText } from "./utils.js"
 
 const auth = new google.auth.JWT({
@@ -45,7 +45,7 @@ export async function checkUser(username: string) {
 export async function getNextChapterNumber(username: string) {
   const sheets = google.sheets({ version: "v4", auth })
   const userRowNumber = await getUserRowNumber(username)
-  const range = `${SHEETS.MEMBERS}!B${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
+  const range = `${SHEETS.MEMBERS}!${MEMBERS_NAMES_COLUMN}${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
 
   const values = (await (
     await getValuesFromSheet(sheets, range)
@@ -120,7 +120,7 @@ export async function addParticipantToSheet(username: string) {
   const newRowNumber = await getParticipantNameList(auth).then(
     (users) => users.length + 1
   ) // +1 because of header
-  const range = `${SHEETS.MEMBERS}!A${newRowNumber}`
+  const range = `${SHEETS.MEMBERS}!${MEMBERS_NAMES_COLUMN}${newRowNumber}`
 
   const userRow = [getUserHyperlinkFormulaText(username)]
   // TODO: rework to adding new row
