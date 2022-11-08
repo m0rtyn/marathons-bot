@@ -1,4 +1,4 @@
-import { SS_URL } from "./spreadsheet"
+import { SS_URL } from "./spreadsheet.js"
 
 export enum Answers {
   YES = "Yes ✅",
