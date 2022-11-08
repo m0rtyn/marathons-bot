@@ -1,6 +1,6 @@
 import { google, sheets_v4 } from "googleapis"
 import { JWT } from "googleapis-common"
-import { CHAPTERS_PAGES_ROW, CONTENTS_ADDRESS, CREDENTIALS_PATH, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID } from "./constants.js"
+import { CHAPTERS_PAGES_ROW, CHAPTERS_RANGE_START, CONTENTS_ADDRESS, CREDENTIALS_PATH, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID } from "./constants/index.js"
 import { getChapterLetter, getUserHyperlinkFormulaText } from "./utils.js"
 
 const auth = new google.auth.JWT({
@@ -45,7 +45,7 @@ export async function checkUser(username: string) {
 export async function getNextChapterNumber(username: string) {
   const sheets = google.sheets({ version: "v4", auth })
   const userRowNumber = await getUserRowNumber(username)
-  const range = `${SHEETS.MEMBERS}!${MEMBERS_NAMES_COLUMN}${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
+  const range = `${SHEETS.MEMBERS}!${CHAPTERS_RANGE_START}${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
 
   const values = (await (
     await getValuesFromSheet(sheets, range)
@@ -58,7 +58,7 @@ export async function getNextChapterNumber(username: string) {
   return chapterNumber
 }
 
-export async function getNextChapterName(
+export async function getChapterName(
   chapterPage: number
 ) {
   const sheets = google.sheets({ version: "v4", auth })
@@ -81,8 +81,7 @@ export async function getUserRowNumber(username: string) {
   const userIndex = users.indexOf(username)
   if (userIndex === -1) return null
 
-  // +1 because of 0-based index
-  return userIndex + 3 // +3 because of the 2 rows of headers
+  return userIndex + 3 // +3 because of the 2 rows of headers and 0-based index
 }
 
 export async function setChapterAsRead(
@@ -94,11 +93,11 @@ export async function setChapterAsRead(
 
   if (!userRowNumber) return null
 
-  const chapterAlpha = getChapterLetter(chapterNumber)
-
-  const range = `${SHEETS.MEMBERS}!${chapterAlpha}${userRowNumber}`
+  const chapterColumnLetter = getChapterLetter(chapterNumber)
+  
+  const range = `${SHEETS.MEMBERS}!${chapterColumnLetter}${userRowNumber}`
   const requestBody = { values: [[true]] }
-
+  
   try {
     const response = await sheets.spreadsheets.values.update({
       spreadsheetId: SS_ID,
