@@ -21,11 +21,14 @@ export const WEB_APP_URL =
 export const WEBHOOK_URL = TELEGRAM_BOT_URL + "/setWebhook?url=" + WEB_APP_URL
 
 export enum Answers {
-  YES = "Yes",
-  NO = "No",
-  OTHER = "Other",
-  LOG_ME_IN = "Log me in",
-  NEVERMORE = "Nevermore",
+  YES = "Yes ✅",
+  NO = "No ❌",
+  OTHER = "Other chapter 🟡",
+  LOG_ME_IN = "Log me in 📝",
+  NEVERMORE = "Nevermore 🙅",
+  ADD_CHAPTER = "Add chapter 📖",
+  HANDBOOK = "Get the handbook 📓",
+  TABLE = "To the table 📊",
 }
 
 export const MESSAGES = {
@@ -35,10 +38,11 @@ export const MESSAGES = {
   CHAPTER_QUESTION: "Did you read chapter", // Full: Did you read chapter 3 (page: 5)?
   NO_CHAPTER_FOUND: `There are no any chapters left. \nYou can check it at ${SS_URL}`,
   MARATHON_FINISHED: "You have finished the marathon!",
-  SELECT_OTHER_CHAPTER: "Selecting other chapters yet in progress. So, I ask you again.",
+  SELECT_OTHER_CHAPTER: "Please, send me the number of the chapter you want to read",
   HELP: "Chill, you can ask @m0rtyn about problems with me.",
   UNKNOWN_TEXT: "Sorry, I don't understand you. Try to use answer buttons instead of typing text. Also you can ask @m0rtyn for help about me.",
   ERROR: "Sorry, something went wrong. Try again later or ask @m0rtyn for help.",
+  OTHER_CHAPTER_SELECTION: "Please, send me the chapter number you have read from the image below",
 }
 
 export enum SHEETS {
@@ -47,8 +51,11 @@ export enum SHEETS {
   TEAMS = "Leaderboard",
 }
 
-export const CONTENTS_ADDRESS =  `${SHEETS.CONTENTS}!A1:B45`
+export const CONTENTS_ADDRESS =  `${SHEETS.CONTENTS}!A1:B47`
 export const CHALLENGES_ADDRESS = `${SHEETS.CONTENTS}!C1:C45`
+
 export const MEMBERS_NAMES_COLUMN = "B"
+export const CHAPTERS_RANGE_START = "D"
+export const CHAPTERS_RANGE_END = "AN"
 export const CHAPTERS_PAGES_ROW = "2"
 export const MEMBER_NAMES_ADDRESS = `${SHEETS.MEMBERS}!${MEMBERS_NAMES_COLUMN}1:${MEMBERS_NAMES_COLUMN}`
