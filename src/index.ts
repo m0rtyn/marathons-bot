@@ -7,7 +7,6 @@ import {
   onOtherChapterRead,
   onStart,
   selectOtherChapter,
-  test,
 } from "./bot.js"
 
 if (!BOT_TOKEN || !WEBHOOK_URL) throw new Error("No token or webhook url")
@@ -63,9 +62,6 @@ bot.hears(Answers.TABLE, ctx => ctx.reply(
 ))
 
 
-bot.hears(Answers.LOG_ME_IN, logUserIn)
-bot.hears(Answers.NEVERMORE, test)
-
 bot.on("callback_query", (ctx) => {
   switch (ctx.callbackQuery?.data) {
     case Answers.YES:
@@ -73,6 +69,10 @@ bot.on("callback_query", (ctx) => {
     case Answers.OTHER:
       return selectOtherChapter(ctx)
     case Answers.NO:
+      return ctx.reply("👌")
+    case Answers.LOG_ME_IN:
+      return logUserIn(ctx)
+    case Answers.NEVERMORE:
       return ctx.reply("👌")
     default:
       return

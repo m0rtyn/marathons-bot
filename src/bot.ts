@@ -38,11 +38,11 @@ export async function onStart(ctx: Context) {
       keyboard
     )
   } else {
-    return await loggingInUser(ctx)
+    return await askToJoin(ctx)
   }
 }
 
-async function loggingInUser(ctx: Context) {
+async function askToJoin(ctx: Context) {
   const buttons = [
     [
       Markup.button.callback(Answers.LOG_ME_IN, Answers.LOG_ME_IN),
@@ -53,7 +53,7 @@ async function loggingInUser(ctx: Context) {
 }
 
 export async function logUserIn(ctx: Context) {
-  const username = ctx.message?.from.username
+  const username = ctx.callbackQuery?.from?.username || ctx.from?.username
   if (!username) throw new Error("No username found")
 
   await addParticipantToSheet(username)
@@ -133,8 +133,9 @@ export async function selectOtherChapter(ctx: Context) {
 // TODO: specify input type
 export async function onOtherChapterRead(ctx: any) {
   const messageText = ctx?.message?.text
+  const username = ctx.callbackQuery?.from?.username || ctx.from?.username
 
-  if (!ctx.from?.username || !messageText || !ctx.chat?.id) {
+  if (!username || !messageText || !ctx.chat?.id) {
     throw new Error("No username or chapter number or chat id found")
   }
 
@@ -145,7 +146,7 @@ export async function onOtherChapterRead(ctx: any) {
   const chapterNumber = Number(messageText)
   dialogState[ctx.chat.id].isOtherChapterSelectionActive = false
 
-  await setChapterAsRead(ctx.from?.username, chapterNumber)
+  await setChapterAsRead(username, chapterNumber)
   await ctx.reply(MESSAGES.NEXT_CHAPTER)
 
   return await askNextChapter(ctx)

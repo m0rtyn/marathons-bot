@@ -21,6 +21,6 @@ export const MESSAGES = {
   SELECT_OTHER_CHAPTER: "Please, send me the number of the chapter you want to read",
   HELP: "Chill, you can ask @m0rtyn about problems with me.",
   UNKNOWN_TEXT: "Sorry, I don't understand you. Try to use answer buttons instead of typing text. Also you can ask @m0rtyn for help about me.",
-  ERROR: "Sorry, something went wrong. Try again later or ask @m0rtyn for help.",
+  ERROR: "Sorry, something went wrong. Try to reboot with /start command or ask @m0rtyn for help.",
   OTHER_CHAPTER_SELECTION: "Please, send me the number of the chapter you read from picture below"
 }
