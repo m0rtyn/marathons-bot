@@ -19,7 +19,7 @@ export const dialogState: {
 
 try {
   bot.use(Telegraf.log())
-  bot.telegram.setWebhook(WEBHOOK_URL)
+  bot.telegram.setWebhook(WEBHOOK_URL).then((res) => console.log(res)).catch((err) => console.error(err))
 } catch (error) {
   console.error(error)
   bot.stop()
