@@ -16,7 +16,7 @@ import {
 } from "./spreadsheet.js"
 
 const CHAPTERS_PIC_URL =
-  "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/ba021b21-4b3e-41b1-b982-234fac16de34/CleanShot_2022-11-07_at_16.40.172x.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20221108%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20221108T135140Z&X-Amz-Expires=86400&X-Amz-Signature=ad45c9f635a33d2510a2675763f10c3e74ae93ff98eec9592397b2bd48717dd1&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22CleanShot%25202022-11-07%2520at%252016.40.17%25402x.png%22&x-id=GetObject"
+  "https://i.ibb.co/DKY6FVW/cfar-handbook-chapters.png"
 
 export async function onStart(ctx: Context) {
   const username = ctx.message?.from.username
