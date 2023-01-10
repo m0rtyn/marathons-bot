@@ -15,10 +15,10 @@ import {
   setChapterAsRead,
   getProgress,
   getBetterThanPercent,
-  getTeamProgress,
-  getTeamPlace,
-  getTeamName,
-  getDaysLeft,
+  // getTeamProgress,
+  // getTeamPlace,
+  // getTeamName,
+  // getDaysLeft,
 } from "./spreadsheet.js"
 import { getCompliment } from "./utils.js"
 
