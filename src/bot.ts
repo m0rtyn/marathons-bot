@@ -10,10 +10,17 @@ import {
   addParticipantToSheet,
   checkUser,
   getChapterPage,
-  getChapterName as getChapterName,
+  getChapterName,
   getNextChapterNumber,
   setChapterAsRead,
+  getProgress,
+  getBetterThanPercent,
+  getTeamProgress,
+  getTeamPlace,
+  getTeamName,
+  getDaysLeft,
 } from "./spreadsheet.js"
+import { getCompliment } from "./utils.js"
 
 const CHAPTERS_PIC_URL =
   "https://i.ibb.co/DKY6FVW/cfar-handbook-chapters.png"
@@ -25,12 +32,12 @@ export async function onStart(ctx: Context) {
   const isLoggedIn = await checkUser(username)
   if (isLoggedIn) {
     const keyboard = Markup.keyboard([
+      // Markup.button.callback(Answers.TABLE, 'table'),
       // Markup.button.text("Команда"), // TODO: add team command
-      // Markup.button.text("Статистика"), // TODO: add stats command
+      Markup.button.callback(Answers.STATS, "statistics"),
       Markup.button.callback(Answers.ADD_CHAPTER, "add_chapter"),
       Markup.button.callback(Answers.HANDBOOK, 'handbook'),
-      Markup.button.callback(Answers.TABLE, 'table'),
-    ])
+    ], { columns: 3 }).resize()
     
     await ctx.reply("You are logged in")
     return await ctx.reply(
@@ -150,4 +157,29 @@ export async function onOtherChapterRead(ctx: any) {
   await ctx.reply(MESSAGES.NEXT_CHAPTER)
 
   return await askNextChapter(ctx)
+}
+
+export const showUserStats = async (ctx: Context) => {
+  const username = ctx.callbackQuery?.from?.username || ctx.from?.username
+  if (!username) throw new Error("No username found")
+
+  const progress = await getProgress(username)
+  const betterThanPercent = await getBetterThanPercent(progress)
+  const compliment = getCompliment()
+
+  // TODO: implement team progress and forecast
+  // const teamProgress = await getTeamProgress(username)
+  // const teamPlace = await getTeamPlace(username)
+  // const teamName = await getTeamName(username)
+  // const daysLeft = await getDaysLeft(username)
+  
+  const replyText = 
+`\— Your progress by pages is *${progress}*
+\— You better than *${betterThanPercent}%* of participants
+\— And you are so ||${compliment}||\\!`
+  // — Your team progress is **${teamProgress}** / ${teamPlace} place (${teamName})
+  // — You can finish marathon in ${daysLeft} days
+
+
+  return await ctx.replyWithMarkdownV2(replyText)
 }

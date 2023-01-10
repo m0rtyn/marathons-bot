@@ -1,12 +1,13 @@
 import { google, sheets_v4 } from "googleapis"
 import { JWT } from "googleapis-common"
-import { CHAPTERS_PAGES_ROW, CHAPTERS_RANGE_START, CONTENTS_ADDRESS, CREDENTIALS_PATH, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID } from "./constants/index.js"
+import { CHAPTERS_PAGES_ROW, CHAPTERS_RANGE_END, CHAPTERS_RANGE_START, CONTENTS_ADDRESS, CREDENTIALS_PATH, MAX_CHAPTER_NUMBER, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID, PROGRESS_COLUMN, PROGRESS_START_ROW } from "./constants/index.js"
 import { getChapterLetter, getUserHyperlinkFormulaText } from "./utils.js"
 
 const auth = new google.auth.JWT({
   keyFile: CREDENTIALS_PATH,
   scopes: SCOPES,
 })
+const sheets = google.sheets({ version: "v4", auth })
 
 export const getValuesFromSheet = async (
   sheets: sheets_v4.Sheets,
@@ -32,8 +33,6 @@ export const getValuesFromSheet = async (
 export async function getParticipantNameList(
   auth: JWT
 ): Promise<string[] | never> {
-  const sheets = google.sheets({ version: "v4", auth })
-
   return (await getValuesFromSheet(sheets, MEMBER_NAMES_ADDRESS)).flat()
 }
 
@@ -43,7 +42,6 @@ export async function checkUser(username: string) {
 }
 
 export async function getNextChapterNumber(username: string) {
-  const sheets = google.sheets({ version: "v4", auth })
   const userRowNumber = await getUserRowNumber(username)
   const range = `${SHEETS.MEMBERS}!${CHAPTERS_RANGE_START}${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
 
@@ -61,8 +59,6 @@ export async function getNextChapterNumber(username: string) {
 export async function getChapterName(
   chapterPage: number
 ) {
-  const sheets = google.sheets({ version: "v4", auth })
-
   const [chapterPages, chapterNames] = await getValuesFromSheet(
     sheets,
     CONTENTS_ADDRESS,
@@ -88,7 +84,6 @@ export async function setChapterAsRead(
   username: string,
   chapterNumber: number
 ) {
-  const sheets = google.sheets({ version: "v4", auth })
   const userRowNumber = await getUserRowNumber(username)
 
   if (!userRowNumber) return null
@@ -114,8 +109,6 @@ export async function setChapterAsRead(
 }
 
 export async function addParticipantToSheet(username: string) {
-  const sheets = google.sheets({ version: "v4", auth })
-
   const newRowNumber = await getParticipantNameList(auth).then(
     (users) => users.length + 1
   ) // +1 because of header
@@ -141,7 +134,6 @@ export async function addParticipantToSheet(username: string) {
 }
 
 export async function getChapterPage(chapterNumber: number) {
-  const sheets = google.sheets({ version: "v4", auth })
   const chapterColumnLetter = getChapterLetter(chapterNumber)
   const chapterPageAddress = `${SHEETS.MEMBERS}!${chapterColumnLetter}${CHAPTERS_PAGES_ROW}:${chapterColumnLetter}${CHAPTERS_PAGES_ROW}`
 
@@ -151,3 +143,30 @@ export async function getChapterPage(chapterNumber: number) {
 
   return Number(chapterPage)
 }
+
+export const getProgress = async (username: string) => {
+  const userRowNumber = await getUserRowNumber(username)
+  const userChaptersRange = `${SHEETS.MEMBERS}!${CHAPTERS_RANGE_START}${userRowNumber}:${CHAPTERS_RANGE_END}${userRowNumber}` // E.g. Board!B4:Z4 full forth row only with user's chapters
+  const readChapters = (await getValuesFromSheet(sheets, userChaptersRange))
+    .flat()
+    .filter(value => value === 'TRUE')
+    .length
+  // TODO: make progress calculation based of pages, not chapters
+  const progress = Math.round((readChapters / MAX_CHAPTER_NUMBER) * 100)
+  return progress
+}
+
+export const getBetterThanPercent = async (progress: number) => {
+  const usersProgressesRange = `${SHEETS.MEMBERS}!${PROGRESS_COLUMN}${PROGRESS_START_ROW}:${PROGRESS_COLUMN}` // E.g. Board!B4:Z4 full forth row only with user's chapters
+  const usersProgresses = (await getValuesFromSheet(sheets, usersProgressesRange)).flat().map((progress: string) => Number.parseInt(progress))
+  
+  const betterThan = usersProgresses.filter((userProgress) => progress > userProgress).length
+  const betterThanPercent = Math.round((betterThan / (usersProgresses.length - 1)) * 100)
+  
+  return betterThanPercent
+}
+
+export const getTeamProgress = async (username: string) => 100500
+export const getTeamPlace = async (username: string) => 100500
+export const getTeamName = async (username: string) => "Team name"
+export const getDaysLeft = async (username: string) => 100500

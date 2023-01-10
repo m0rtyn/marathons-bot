@@ -1,14 +1,15 @@
 import { SS_URL } from "./spreadsheet.js"
 
 export enum Answers {
-  YES = "Yes ✅",
-  NO = "No ❌",
-  OTHER = "Other chapter 🟡",
-  LOG_ME_IN = "Log me in 📝",
-  NEVERMORE = "Nevermore 🙅",
-  ADD_CHAPTER = "Add chapter 📖",
-  HANDBOOK = "Get the handbook 📓",
-  TABLE = "To the table 📊",
+  YES = "✅ Yes",
+  NO = "❌ No",
+  OTHER = "🟡 Other chapter",
+  LOG_ME_IN = "📝 Log me in",
+  NEVERMORE = "🙅 Nevermore",
+  ADD_CHAPTER = "☝ Add chapter",
+  HANDBOOK = " 📓 Get the handbook",
+  TABLE = "📊 To the table",
+  STATS = "📈 Statistics",
 }
 
 export const MESSAGES = {

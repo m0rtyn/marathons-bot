@@ -7,6 +7,7 @@ import {
   onOtherChapterRead,
   onStart,
   selectOtherChapter,
+  showUserStats
 } from "./bot.js"
 
 if (!BOT_TOKEN || !WEBHOOK_URL) throw new Error("No token or webhook url")
@@ -38,6 +39,7 @@ bot.start(onStart)
 bot.help((ctx) => ctx.reply(MESSAGES.HELP))
 
 bot.hears(Answers.ADD_CHAPTER, askNextChapter)
+bot.hears(Answers.STATS, showUserStats)
 bot.hears(Answers.HANDBOOK, ctx => ctx.reply(
   "Link to the handbook",
   Markup.inlineKeyboard([
@@ -61,7 +63,7 @@ bot.hears(Answers.TABLE, ctx => ctx.reply(
   ])
 ))
 
-
+// NOTE: inline keyboard answers
 bot.on("callback_query", (ctx) => {
   switch (ctx.callbackQuery?.data) {
     case Answers.YES:

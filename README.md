@@ -9,7 +9,7 @@ NOTE: !!! scripts in package.json is wrong, you need to remove fucking pm2 and a
 3. Paste to env variable NGROK_URL
 4. Check that setted correct bot token
 5. run TS compiler for ts files (via VSCode)
-6. run `yarn dev`
+6. run `yarn start`
 
 ## Tech stack
 
