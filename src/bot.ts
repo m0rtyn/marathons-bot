@@ -174,7 +174,7 @@ export const showUserStats = async (ctx: Context) => {
   // const daysLeft = await getDaysLeft(username)
   
   const replyText = 
-`\— Your progress by pages is *${progress}*
+`\— You have read *${progress}%* of the Handbook
 \— You better than *${betterThanPercent}%* of participants
 \— And you are so ||${compliment}||\\!`
   // — Your team progress is **${teamProgress}** / ${teamPlace} place (${teamName})

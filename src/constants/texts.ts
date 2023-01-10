@@ -7,9 +7,9 @@ export enum Answers {
   LOG_ME_IN = "📝 Log me in",
   NEVERMORE = "🙅 Nevermore",
   ADD_CHAPTER = "☝ Add chapter",
-  HANDBOOK = " 📓 Get the handbook",
-  TABLE = "📊 To the table",
+  HANDBOOK = " 📓 Get handbook",
   STATS = "📈 Statistics",
+  TABLE = "📊 To the table",
 }
 
 export const MESSAGES = {
