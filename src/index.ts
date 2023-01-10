@@ -40,6 +40,14 @@ bot.help((ctx) => ctx.reply(MESSAGES.HELP))
 
 bot.hears(Answers.ADD_CHAPTER, askNextChapter)
 bot.hears(Answers.STATS, showUserStats)
+bot.hears(Answers.FEEDBACK, ctx => {
+  ctx.reply(
+    MESSAGES.FEEDBACK, 
+    Markup.inlineKeyboard([[
+      Markup.button.url("G.Form ↗", "https://forms.gle/ii2pZUZJhF1pD4AT8")
+    ]])
+  )
+})
 bot.hears(Answers.HANDBOOK, ctx => ctx.reply(
   "Link to the handbook",
   Markup.inlineKeyboard([

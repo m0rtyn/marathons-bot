@@ -34,10 +34,11 @@ export async function onStart(ctx: Context) {
     const keyboard = Markup.keyboard([
       // Markup.button.callback(Answers.TABLE, 'table'),
       // Markup.button.text("Команда"), // TODO: add team command
-      Markup.button.callback(Answers.STATS, "statistics"),
       Markup.button.callback(Answers.ADD_CHAPTER, "add_chapter"),
+      Markup.button.callback(Answers.STATS, "statistics"),
       Markup.button.callback(Answers.HANDBOOK, 'handbook'),
-    ], { columns: 3 }).resize()
+      Markup.button.callback(Answers.FEEDBACK, 'feedback'),
+    ], { columns: 2 }).resize()
     
     await ctx.reply("You are logged in")
     return await ctx.reply(
