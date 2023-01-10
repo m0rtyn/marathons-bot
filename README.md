@@ -1,4 +1,8 @@
+# Marathons bot
+
 ## Development
+
+NOTE: !!! scripts in package.json is wrong, you need to remove fucking pm2 and add docker
 
 1. > `./ngrok http https://localhost`
 2. Copy Forwarding address
