@@ -7,7 +7,7 @@ export enum Answers {
   LOG_ME_IN = "📝 Log me in",
   NEVERMORE = "🙅 Nevermore",
   ADD_CHAPTER = "☝ Add chapter",
-  HANDBOOK = " 📓 Get handbook",
+  HANDBOOK = "📓 Get handbook",
   STATS = "📈 Statistics",
   TABLE = "📊 To the table",
 }
