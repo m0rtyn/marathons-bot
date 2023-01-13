@@ -4,8 +4,9 @@
     "target": "es6",
     "moduleResolution": "node",
     "outDir": "./dist",
+    "baseUrl": "./src",
     "paths": {
-      "telegraf": ["./node_modules/telegraf"]
+      "telegraf": ["./node_modules/telegraf"],
     },
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -18,5 +19,6 @@
     "noUnusedLocals": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"]
 }

@@ -1,10 +1,9 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 export default {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
-  globals: {
-    'ts-jest': {
-      isolatedModules: true
-    }
+  transform: {
+    "^\\/.+\\.(ts)$": ['ts-jest', { /* ts-jest config goes here in Jest */ }],
   },
+  transformIgnorePatterns: ["/node_modules", "/dist"],
 };
