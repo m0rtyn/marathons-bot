@@ -175,9 +175,9 @@ export const showUserStats = async (ctx: Context) => {
   // const daysLeft = await getDaysLeft(username)
   
   const replyText = 
-`\— You have read *${progress}%* of the Handbook
-\— You better than *${betterThanPercent}%* of participants
-\— And you are so ||${compliment}||\\!`
+`— You have read *${progress}%* of the Handbook
+— You better than *${betterThanPercent}%* of participants
+— And you are so ||${compliment}||\\!`
   // — Your team progress is **${teamProgress}** / ${teamPlace} place (${teamName})
   // — You can finish marathon in ${daysLeft} days
 

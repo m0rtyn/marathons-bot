@@ -32,7 +32,10 @@ bot.catch((err, ctx) => {
   // ctx.forwardMessage(ctx, m0rtynChartId, err)
 
   ctx.reply(MESSAGES.ERROR)
-  console.log(`Ooops, encountered an error for ${ctx.updateType}`, err)
+  console.log(
+`Ooops, encountered an error for ${ctx.updateType}.
+${err}`
+  )
 })
 
 bot.start(onStart)
