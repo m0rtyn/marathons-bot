@@ -60,7 +60,7 @@ bot.hears(Answers.FEEDBACK, ctx => {
   )
 })
 bot.hears(Answers.HANDBOOK, ctx => ctx.reply(
-  "Link to the handbook",
+  MESSAGES.HANDBOOK,
   Markup.inlineKeyboard([
     [
       Markup.button.url(
@@ -71,7 +71,7 @@ bot.hears(Answers.HANDBOOK, ctx => ctx.reply(
   ])
 ))
 bot.hears(Answers.TABLE, ctx => ctx.reply(
-  "Link to the table",
+  MESSAGES.TABLE,
   Markup.inlineKeyboard([
     [
       Markup.button.url(
@@ -84,8 +84,8 @@ bot.hears(Answers.TABLE, ctx => ctx.reply(
 bot.hears(Answers.UPDATE, async (ctx) => {
   const dialogBotVersion = botState[ctx.chat.id]?.currentVersion
   const isNewVersion = dialogBotVersion && dialogBotVersion === process.env?.npm_package_version
-  ctx.reply(`Bot version is ${dialogBotVersion || "unknown"} ${isNewVersion ? "👍" : "👎"}`)
-  !isNewVersion && ctx.reply("Please, press 👉 /start")
+  ctx.reply(`${MESSAGES.BOT_VERSION} ${dialogBotVersion || "unknown"} ${isNewVersion ? "👍" : "👎"}`)
+  !isNewVersion && ctx.reply(MESSAGES.UPDATE_AVAILABLE)
 })
 
 // NOTE: inline keyboard answers
@@ -96,11 +96,11 @@ bot.on("callback_query", (ctx) => {
     case Answers.OTHER:
       return selectOtherChapter(ctx)
     case Answers.NO:
-      return ctx.reply("👌")
+      return ctx.reply(MESSAGES.OKAY)
     case Answers.LOG_ME_IN:
       return logUserIn(ctx)
     case Answers.NEVERMORE:
-      return ctx.reply("👌")
+      return ctx.reply(MESSAGES.OKAY)
     default:
       return
   }

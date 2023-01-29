@@ -3,33 +3,33 @@ import { CHAPTER_COLUMNS_OFFSET, MAX_CHAPTER_NUMBER } from "./constants/index.js
 const ALPHABET_SIZE = 26;
 const CHAR_CODE_OFFSET = 64; // A is 65 in ASCII
 const COMPLIMENTS = [
-  "cute 😊",
-  "smart 🤓",
-  "beautiful 😉",
-  "amazing 🤩",
-  "awesome 👍",
-  "wonderful 😻",
-  "great 😃",
-  "cool 😎",
-  "nice 🙂",
-  "funny 😁",
-  "interesting 🤔",
-  "amusing 😂",
-  "charming 😘",
-  "delightful 😌",
-  "enchanting 🧙",
-  "entertaining 😜",
-  "fascinating 🤩",
-  "glamorous 😘",
-  "good\\-looking 😉",
-  "handsome ☺️",
-  "lovely 🥰",
-  "magnificent 😳",
-  "marvelous 🙃",
-  "nice\\-looking 😊",
-  "pleasant 😇",
-  "pretty 🥺",
-  "sexy 😘",
+  "милы 😊", // "cute 😊", */ 
+  "умны 🤓", // "smart 🤓", */ 
+  "красивы 😉", // "beautiful 😉", */ 
+  "замечательны 🤩", // "amazing 🤩", */ 
+  "потрясающи 🤩", // "awesome 👍", */ 
+  "прекрасны 😻", // "wonderful 😻", */ 
+  "отлично справляетесь 💪", // "great 😃", */ 
+  "круты 😎", // "cool 😎", */ 
+  // "nice 🙂", */ 
+  "веселы 😁", // "funny 😁", */ 
+  "интересны 🤔", // "interesting 🤔", */ 
+  "забавны 😂", // "amusing 😂", */ 
+  "очаровательны 😘", // "charming 😘", */ 
+  "восхитительны 😌", // "delightful 😌", */ 
+  "обворожительны 🧙", // "enchanting 🧙", */ 
+  // "развлекательны 😜", // "entertaining 😜", */ 
+  "увлекательны 🤩", // "fascinating 🤩", */ 
+  // "гламурны 😘", // "glamorous 😘", */ 
+  "хорошо выглядите 😉", // "good\\-looking 😉", */ 
+  "симпатичны ☺️", // "handsome ☺️", */ 
+  "чудесны 🥰", // "lovely 🥰", */ 
+  "великолепны 😳", // "magnificent 😳", */ 
+  "изумительны 🙃", // "marvelous 🙃", */ 
+  "приятно смотритесь 😊", // "nice\\-looking 😊", */ 
+  "приятны 😇", // "pleasant 😇", */ 
+  // "прекрасны 🥺", // "pretty 🥺", */ 
+  "секси 😘", // "sexy 😘", */ 
 ]
 
 export function getChapterLetter(chapterNumber: number) {

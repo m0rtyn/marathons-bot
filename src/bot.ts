@@ -46,9 +46,9 @@ export async function onStart(ctx: Context) {
       Markup.button.callback(Answers.UPDATE, 'update'),
     ], { wrap: (_, index) => index === 1 || index % 2 !== 0 }).resize()
     
-    await ctx.reply("You are logged in")
+    await ctx.reply(MESSAGES.ALREADY_LOGGED_IN)
     return await ctx.reply(
-      `Hello, @${username}`,
+      `${MESSAGES.HELLO}, @${username}`,
       keyboard
     )
   } else {
@@ -104,7 +104,7 @@ export async function askNextChapter(ctx: Context) {
   const nextChapterPage = await getChapterPage(nextChapterNumber)
   const nextChapterName = await getChapterName(nextChapterPage)
 
-  const replyText = `${MESSAGES.CHAPTER_QUESTION} «${nextChapterName}»?\n(page: ${nextChapterPage})`
+  const replyText = `${MESSAGES.CHAPTER_QUESTION} «${nextChapterName}»?\n(страница: ${nextChapterPage})`
   const buttons = [
     [
       Markup.button.callback(Answers.YES, Answers.YES),
@@ -135,7 +135,7 @@ export async function selectOtherChapter(ctx: Context) {
 
   await ctx.reply(MESSAGES.OTHER_CHAPTER_SELECTION)
   await ctx.sendPhoto({ url: CHAPTERS_PIC_URL })
-  await ctx.reply('Your answer should be just number. E.g.: "3", "13" or "37"')
+  await ctx.reply(MESSAGES.OTHER_CHAPTER_HINT)
 
   const chatId = ctx.chat?.id
   if (chatId) {
@@ -155,7 +155,7 @@ export async function onOtherChapterRead(ctx: any) {
   }
 
   if (!botState[ctx.chat.id]?.isOtherChapterSelectionActive) {
-    return ctx.reply("You should select adding of the new read chapter first")
+    return ctx.reply(MESSAGES.OTHER_CHAPTER_NOT_SELECTED)
   }
 
   const chapterNumber = Number(messageText)
@@ -182,9 +182,12 @@ export const showUserStats = async (ctx: Context) => {
   // const daysLeft = await getDaysLeft(username)
   
   const replyText = 
-`— You have read *${progress}%* of the Handbook
-— You better than *${betterThanPercent}%* of participants
-— And you are so ||${compliment}||\\!`
+`— Вы прочитали *${progress}%* методички
+— Вы лучше *${betterThanPercent}%* участников
+— А ещё вы ||${compliment}||`
+// `— You have read *${progress}%* of the Handbook
+// — You better than *${betterThanPercent}%* of participants
+// — And you are so ||${compliment}||\\!`
   // — Your team progress is **${teamProgress}** / ${teamPlace} place (${teamName})
   // — You can finish marathon in ${daysLeft} days
 
