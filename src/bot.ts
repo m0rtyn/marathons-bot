@@ -5,7 +5,7 @@ import {
   MESSAGES,
   WEBHOOK_URL,
 } from "./constants/index.js"
-import { dialogState } from "./index.js"
+import { BotState, botState, DialogState } from "./index.js"
 import {
   addParticipantToSheet,
   checkUser,
@@ -15,10 +15,6 @@ import {
   setChapterAsRead,
   getProgress,
   getBetterThanPercent,
-  // getTeamProgress,
-  // getTeamPlace,
-  // getTeamName,
-  // getDaysLeft,
 } from "./spreadsheet.js"
 import { getCompliment } from "./utils.js"
 
@@ -27,7 +23,16 @@ const CHAPTERS_PIC_URL =
 
 export async function onStart(ctx: Context) {
   const username = ctx.message?.from.username
-  if (!username) throw new Error("No username found")
+  if (!username || !ctx?.chat?.id) throw new Error("No username or chat found")
+
+  const dialogState: DialogState = botState?.[ctx.chat.id] || {
+    isOtherChapterSelectionActive: false,
+    currentVersion: process.env.npm_package_version || "unknown" ,
+  }
+  Object.assign<BotState, BotState>(
+    botState, 
+    { [ctx.chat.id]: dialogState }
+  )
 
   const isLoggedIn = await checkUser(username)
   if (isLoggedIn) {
@@ -38,11 +43,12 @@ export async function onStart(ctx: Context) {
       Markup.button.callback(Answers.STATS, "statistics"),
       Markup.button.callback(Answers.HANDBOOK, 'handbook'),
       Markup.button.callback(Answers.FEEDBACK, 'feedback'),
-    ], { columns: 2 }).resize()
+      Markup.button.callback(Answers.UPDATE, 'update'),
+    ], { wrap: (_, index) => index === 1 || index % 2 !== 0 }).resize()
     
     await ctx.reply("You are logged in")
     return await ctx.reply(
-      `Hello, ${username}`,
+      `Hello, @${username}`,
       keyboard
     )
   } else {
@@ -98,7 +104,7 @@ export async function askNextChapter(ctx: Context) {
   const nextChapterPage = await getChapterPage(nextChapterNumber)
   const nextChapterName = await getChapterName(nextChapterPage)
 
-  const replyText = `${MESSAGES.CHAPTER_QUESTION} «${nextChapterName}» (page: ${nextChapterPage})?`
+  const replyText = `${MESSAGES.CHAPTER_QUESTION} «${nextChapterName}»?\n(page: ${nextChapterPage})`
   const buttons = [
     [
       Markup.button.callback(Answers.YES, Answers.YES),
@@ -131,8 +137,9 @@ export async function selectOtherChapter(ctx: Context) {
   await ctx.sendPhoto({ url: CHAPTERS_PIC_URL })
   await ctx.reply('Your answer should be just number. E.g.: "3", "13" or "37"')
 
-  if (ctx.chat?.id) {
-    dialogState[ctx.chat.id] = { isOtherChapterSelectionActive: true }
+  const chatId = ctx.chat?.id
+  if (chatId) {
+    botState[chatId] = { ...botState[chatId], isOtherChapterSelectionActive: true }
   }
 
   return
@@ -147,12 +154,12 @@ export async function onOtherChapterRead(ctx: any) {
     throw new Error("No username or chapter number or chat id found")
   }
 
-  if (!dialogState[ctx.chat.id]?.isOtherChapterSelectionActive) {
+  if (!botState[ctx.chat.id]?.isOtherChapterSelectionActive) {
     return ctx.reply("You should select adding of the new read chapter first")
   }
 
   const chapterNumber = Number(messageText)
-  dialogState[ctx.chat.id].isOtherChapterSelectionActive = false
+  botState[ctx.chat.id].isOtherChapterSelectionActive = false
 
   await setChapterAsRead(username, chapterNumber)
   await ctx.reply(MESSAGES.NEXT_CHAPTER)

@@ -50,7 +50,7 @@ export async function getNextChapterNumber(username: string) {
   ).flat()) as string[]
 
   const firstUnreadIndex = values.indexOf("FALSE")
-  if (firstUnreadIndex === -1) return null
+  if (firstUnreadIndex === -1 || firstUnreadIndex === MAX_CHAPTER_NUMBER) return null
 
   const chapterNumber = firstUnreadIndex + 1 // +1 because of the 0-based index
   return chapterNumber

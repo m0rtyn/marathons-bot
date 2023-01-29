@@ -11,6 +11,7 @@ export enum Answers {
   STATS = "📈 Statistics",
   FEEDBACK = "📩 Feedback",
   TABLE = "📊 To the table",
+  UPDATE = "🔄 Update",
 }
 
 export const MESSAGES = {
@@ -26,4 +27,5 @@ export const MESSAGES = {
   ERROR: "Sorry, something went wrong. Try to reboot with /start command or ask @m0rtyn for help.",
   OTHER_CHAPTER_SELECTION: "Please, send me the number of the chapter you read from picture below",
   FEEDBACK: "Please, share your anonymous feedback about the marathon. It will help us to improve it.",
+  SHEETS_QUOTA_EXCEEDED: "Sorry, we have reached the limit of requests to Google Sheets. Please, try again later.",
 }

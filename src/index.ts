@@ -14,9 +14,14 @@ if (!BOT_TOKEN || !WEBHOOK_URL) throw new Error("No token or webhook url")
 
 const bot = new Telegraf(BOT_TOKEN)
 
-export const dialogState: {
-  [key: number]: { isOtherChapterSelectionActive: boolean }
-} = {}
+export interface DialogState {
+  isOtherChapterSelectionActive: boolean
+  currentVersion: string
+}
+export interface BotState {
+  [key: number]: DialogState
+}
+export const botState: BotState = {}
 
 try {
   bot.use(Telegraf.log())
@@ -31,11 +36,14 @@ bot.catch((err, ctx) => {
   // const m0rtynChatId = ???
   // ctx.forwardMessage(ctx, m0rtynChartId, err)
 
-  ctx.reply(MESSAGES.ERROR)
-  console.log(
-`Ooops, encountered an error for ${ctx.updateType}.
-${err}`
-  )
+  if (typeof err === "string" && err.includes("Quota exceeded")) {
+    ctx.reply(MESSAGES.SHEETS_QUOTA_EXCEEDED)
+  } else {
+    ctx.reply(MESSAGES.ERROR)
+    console.error(
+      `Ooops, encountered an error for ${ctx.updateType}:\n${err}`
+    )
+  }
 })
 
 bot.start(onStart)
@@ -73,6 +81,12 @@ bot.hears(Answers.TABLE, ctx => ctx.reply(
     ],
   ])
 ))
+bot.hears(Answers.UPDATE, async (ctx) => {
+  const dialogBotVersion = botState[ctx.chat.id]?.currentVersion
+  const isNewVersion = dialogBotVersion && dialogBotVersion === process.env?.npm_package_version
+  ctx.reply(`Bot version is ${dialogBotVersion || "unknown"} ${isNewVersion ? "👍" : "👎"}`)
+  !isNewVersion && ctx.reply("Please, press 👉 /start")
+})
 
 // NOTE: inline keyboard answers
 bot.on("callback_query", (ctx) => {
@@ -96,7 +110,8 @@ bot.hears(/^[0-9]{1,2}$/, onOtherChapterRead)
 
 bot.hears(/.*/, (ctx) => ctx.reply(MESSAGES.UNKNOWN_TEXT))
 
-bot.launch()
-
+bot.launch().then(() => {
+  console.log("Bot is up and running")
+}).catch((err) => console.debug("🚀 ~ err", err))
 process.once("SIGINT", () => bot.stop())
 process.once("SIGTERM", () => bot.stop())
