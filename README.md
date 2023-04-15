@@ -4,10 +4,10 @@
 
 !!! NOTE: scripts in package.json is wrong, you need to remove fucking `pm2` and add ~~fucking~~ `Docker`
 
-1. > `./ngrok http https://localhost`
-2. Copy Forwarding address
+1. `./ngrok http https://localhost`
+2. Copy "Forwarding address"
    - ![](2023-04-15-15-31-19.png)
-3. Paste to env variable NGROK_URL
+3. Paste to env variable `NGROK_URL`
 4. Check that setted correct bot token (development, not production)
 5. ! Run TS compiler for `.ts` files in Watch Mode (via VSCode)
 6. Run `yarn start`
