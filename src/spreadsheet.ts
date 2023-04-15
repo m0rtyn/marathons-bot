@@ -1,13 +1,34 @@
 import { google, sheets_v4 } from "googleapis"
-import { JWT } from "googleapis-common"
-import { CHAPTERS_PAGES_ROW, CHAPTERS_RANGE_END, CHAPTERS_RANGE_START, CONTENTS_ADDRESS, CREDENTIALS_PATH, MAX_CHAPTER_NUMBER, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SCOPES, SHEETS, SS_ID, PROGRESS_COLUMN, PROGRESS_START_ROW } from "./constants/index.js"
+import { CHAPTERS_PAGES_ROW, CHAPTERS_RANGE_END, CHAPTERS_RANGE_START, CONTENTS_ADDRESS, MAX_CHAPTER_NUMBER, MEMBERS_NAMES_COLUMN, MEMBER_NAMES_ADDRESS, SHEETS, SS_ID, PROGRESS_COLUMN, PROGRESS_START_ROW } from "./constants/index.js"
 import { getChapterLetter, getUserHyperlinkFormulaText } from "./utils.js"
 
-const auth = new google.auth.JWT({
-  keyFile: CREDENTIALS_PATH,
-  scopes: SCOPES,
+const authPromise = authorize().catch((err) => {
+  console.error(err)
+  throw new Error("Error while trying to retrieve Sheets access token")
 })
-const sheets = google.sheets({ version: "v4", auth })
+const sheetsPromise = getSheets()
+
+export async function authorize() {
+  if (!process?.env?.GOOGLE_PRIVATE_KEY) throw new Error("No private key");
+
+  return google.auth.getClient({
+    credentials: {
+      type: "service_account",
+      private_key: JSON.parse(process.env.GOOGLE_PRIVATE_KEY),
+      client_email: process.env.GOOGLE_CLIENT_EMAIL,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+    },
+    scopes: [
+      "https://www.googleapis.com/auth/spreadsheets",
+    ],
+  });
+}
+
+async function getSheets() {
+  const auth = await authPromise
+  return google.sheets({ version: "v4", auth })
+}
+
 
 export const getValuesFromSheet = async (
   sheets: sheets_v4.Sheets,
@@ -30,24 +51,23 @@ export const getValuesFromSheet = async (
   }
 }
 
-export async function getParticipantNameList(
-  auth: JWT
-): Promise<string[] | never> {
+export async function getParticipantNameList(): Promise<string[] | never> {
+  const sheets = await sheetsPromise
   return (await getValuesFromSheet(sheets, MEMBER_NAMES_ADDRESS)).flat()
 }
 
 export async function checkUser(username: string) {
-  const users = await getParticipantNameList(auth)
+  const users = await getParticipantNameList()
   return users.includes(username)
 }
 
 export async function getNextChapterNumber(username: string) {
   const userRowNumber = await getUserRowNumber(username)
-  const range = `${SHEETS.MEMBERS}!${CHAPTERS_RANGE_START}${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
+  const userChaptersRange = `${SHEETS.MEMBERS}!${CHAPTERS_RANGE_START}${userRowNumber}:${userRowNumber}` // E.g. Board!B4:4 full forth row only with user's chapters
 
-  const values = (await (
-    await getValuesFromSheet(sheets, range)
-  ).flat()) as string[]
+  const sheets = await sheetsPromise
+  const userChapters = await getValuesFromSheet(sheets, userChaptersRange)
+  const values = (await userChapters.flat()) as string[]
 
   const firstUnreadIndex = values.indexOf("FALSE")
   if (firstUnreadIndex === -1 || firstUnreadIndex === MAX_CHAPTER_NUMBER) return null
@@ -59,6 +79,7 @@ export async function getNextChapterNumber(username: string) {
 export async function getChapterName(
   chapterPage: number
 ) {
+  const sheets = await sheetsPromise
   const [chapterPages, chapterNames] = await getValuesFromSheet(
     sheets,
     CONTENTS_ADDRESS,
@@ -72,7 +93,7 @@ export async function getChapterName(
 }
 
 export async function getUserRowNumber(username: string) {
-  const users = await getParticipantNameList(auth)
+  const users = await getParticipantNameList()
 
   const userIndex = users.indexOf(username)
   if (userIndex === -1) return null
@@ -94,6 +115,7 @@ export async function setChapterAsRead(
   const requestBody = { values: [[true]] }
   
   try {
+    const sheets = await sheetsPromise
     const response = await sheets.spreadsheets.values.update({
       spreadsheetId: SS_ID,
       requestBody,
@@ -109,7 +131,7 @@ export async function setChapterAsRead(
 }
 
 export async function addParticipantToSheet(username: string) {
-  const newRowNumber = await getParticipantNameList(auth).then(
+  const newRowNumber = await getParticipantNameList().then(
     (users) => users.length + 1
   ) // +1 because of header
   const range = `${SHEETS.MEMBERS}!${MEMBERS_NAMES_COLUMN}${newRowNumber}`
@@ -119,6 +141,7 @@ export async function addParticipantToSheet(username: string) {
   const requestBody = { values: [userRow] }
 
   try {
+    const sheets = await sheetsPromise
     const response = await sheets.spreadsheets.values.append({
       valueInputOption: "USER_ENTERED",
       spreadsheetId: SS_ID,
@@ -137,6 +160,7 @@ export async function getChapterPage(chapterNumber: number) {
   const chapterColumnLetter = getChapterLetter(chapterNumber)
   const chapterPageAddress = `${SHEETS.MEMBERS}!${chapterColumnLetter}${CHAPTERS_PAGES_ROW}:${chapterColumnLetter}${CHAPTERS_PAGES_ROW}`
 
+  const sheets = await sheetsPromise
   const chapterPage = (await getValuesFromSheet(sheets, chapterPageAddress)).flat()[0]
 
   if (!chapterPage) throw new Error("Chapter page not found")
@@ -147,6 +171,7 @@ export async function getChapterPage(chapterNumber: number) {
 export const getProgress = async (username: string) => {
   const userRowNumber = await getUserRowNumber(username)
   const userChaptersRange = `${SHEETS.MEMBERS}!${CHAPTERS_RANGE_START}${userRowNumber}:${CHAPTERS_RANGE_END}${userRowNumber}` // E.g. Board!B4:Z4 full forth row only with user's chapters
+  const sheets = await sheetsPromise
   const readChapters = (await getValuesFromSheet(sheets, userChaptersRange))
     .flat()
     .filter(value => value === 'TRUE')
@@ -158,6 +183,7 @@ export const getProgress = async (username: string) => {
 
 export const getBetterThanPercent = async (progress: number) => {
   const usersProgressesRange = `${SHEETS.MEMBERS}!${PROGRESS_COLUMN}${PROGRESS_START_ROW}:${PROGRESS_COLUMN}` // E.g. Board!B4:Z4 full forth row only with user's chapters
+  const sheets = await sheetsPromise
   const usersProgresses = (await getValuesFromSheet(sheets, usersProgressesRange)).flat().map((progress: string) => Number.parseInt(progress))
   
   const betterThan = usersProgresses.filter((userProgress) => progress > userProgress).length
@@ -166,7 +192,8 @@ export const getBetterThanPercent = async (progress: number) => {
   return betterThanPercent
 }
 
-export const getTeamProgress = async (username: string) => 100500
-export const getTeamPlace = async (username: string) => 100500
-export const getTeamName = async (username: string) => "Team name"
-export const getDaysLeft = async (username: string) => 100500
+// TODO: add team statistics
+export const getTeamProgress = async () => 100500
+export const getTeamPlace = async () => 100500
+export const getTeamName = async () => "Team name"
+export const getDaysLeft = async () => 100500
