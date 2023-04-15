@@ -41,7 +41,7 @@ bot.catch((err, ctx) => {
   } else {
     ctx.reply(MESSAGES.ERROR)
     console.error(
-      `Ooops, encountered an error for ${ctx.updateType}:\n${err}`
+      `⚠️ Ooops, encountered an error for ${ctx.updateType}:\n${err}`
     )
   }
 })
