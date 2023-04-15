@@ -12,6 +12,12 @@
 5. ! Run TS compiler for `.ts` files in Watch Mode (via VSCode)
 6. Run `yarn start`
 
+### Authorizing
+
+// TODO: add instructions to get personal Google Service Account
+// TODO: add instructions to get personal Telegram bot token*
+
+
 ## Tech stack
 
 - Telegram bot API by Telegraf (Node.js);
