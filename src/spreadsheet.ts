@@ -14,7 +14,7 @@ export async function authorize() {
   return google.auth.getClient({
     credentials: {
       type: "service_account",
-      private_key: JSON.parse(process.env.GOOGLE_PRIVATE_KEY),
+      private_key: process.env.GOOGLE_PRIVATE_KEY,
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
       client_id: process.env.GOOGLE_CLIENT_ID,
     },
