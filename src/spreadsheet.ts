@@ -11,10 +11,11 @@ const sheetsPromise = getSheets()
 export async function authorize() {
   if (!process?.env?.GOOGLE_PRIVATE_KEY) throw new Error("No private key");
 
+  const formattedPrivateKey = process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n');
   return google.auth.getClient({
     credentials: {
       type: "service_account",
-      private_key: process.env.GOOGLE_PRIVATE_KEY,
+      private_key: formattedPrivateKey,
       client_email: process.env.GOOGLE_CLIENT_EMAIL,
       client_id: process.env.GOOGLE_CLIENT_ID,
     },
